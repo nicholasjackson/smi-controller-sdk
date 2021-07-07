@@ -43,8 +43,8 @@ const (
 	HTTPRouteMethodPatch HTTPRouteMethod = "PATCH"
 )
 
-// httpHeaders is a map of key/value pairs which match HTTP header name and value
-type httpHeaders map[string]string
+// HTTPHeaders is a map of key/value pairs which match HTTP header name and value
+type HTTPHeaders map[string]string
 
 // HTTPRouteMethod are methods allowed by the route
 type HTTPRouteMethod string
@@ -65,31 +65,31 @@ type HTTPMatch struct {
 	PathRegex string `json:"pathRegex,omitempty"`
 
 	// Headers is a list of headers used to match HTTP traffic
-	Headers httpHeaders `json:"headers,omitempty"`
+	Headers HTTPHeaders `json:"headers,omitempty"`
 }
 
-// +genclient
-// +genclient:noStatus
-// +kubebuilder:object:root=true
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// HTTPRouteGroupStatus defines the observed state of UDPRoute
+type HTTPRouteGroupStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
 
 // HTTPRouteGroup is the Schema for the httproutegroups API
 // It is used to describe HTTP/1 and HTTP/2 traffic.
 // It enumerates the routes that can be served by an application.
 type HTTPRouteGroup struct {
-	metav1.TypeMeta `json:",inline"`
-
-	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-	// +optional
+	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Routes for inbound traffic
-	Matches []HTTPMatch `json:"matches,omitempty"`
+	Matches []HTTPMatch          `json:"matches,omitempty"`
+	Status  HTTPRouteGroupStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // HTTPRouteGroupList contains a list of HTTPRouteGroup
 type HTTPRouteGroupList struct {

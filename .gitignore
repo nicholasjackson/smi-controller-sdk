@@ -1,2 +1,4 @@
 .envrc
 bin
+testbin
+cover.out

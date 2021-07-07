@@ -41,15 +41,20 @@ spec:
             - name: http
               containerPort: 9443
               protocol: TCP
+            - name: health
+              containerPort: 9444
+              protocol: TCP
           volumeMounts:
             - name: tls-secret
               mountPath: /tmp/k8s-webhook-server/serving-certs
           livenessProbe:
-            tcpSocket:
-              port: http
+            httpGet:
+              path: /healthz
+              port: health
           readinessProbe:
-            tcpSocket:
-              port: http
+            httpGet:
+              path: /readyz
+              port: health
           resources:
             {{- toYaml .Values.controller.resources | nindent 12 }}
           env:
@@ -69,5 +74,5 @@ spec:
       volumes:
         - name: tls-secret
           secret:
-            secretName: controller-webhook-certificate
+            secretName: {{include "smi-controller.fullname" .}}-webhook-certificate
 {{- end }}

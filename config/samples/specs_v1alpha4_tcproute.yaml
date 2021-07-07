@@ -1,0 +1,9 @@
+apiVersion: specs.smi-spec.io/v1alpha4
+ kind: TCPRoute
+ metadata:
+   name: the-routes
+ spec:
+   matches:
+     ports:
+     - 3306
+     - 6446

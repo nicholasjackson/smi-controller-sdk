@@ -7,6 +7,110 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
+  - access.smi-spec.io
+  resources:
+  - traffictargets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - access.smi-spec.io
+  resources:
+  - traffictargets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - access.smi-spec.io
+  resources:
+  - traffictargets/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - httproutegroups
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - httproutegroups/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - httproutegroups/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - tcproutes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - tcproutes/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - tcproutes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - udproutes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - udproutes/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - udproutes/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
   - split.smi-spec.io
   resources:
   - trafficsplits

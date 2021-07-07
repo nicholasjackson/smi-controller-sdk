@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "smi-controller.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "smi-controller.fullname" . }}:{{ .Values.webhook.port }}']
   restartPolicy: Never

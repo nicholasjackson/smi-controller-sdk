@@ -1,0 +1,4 @@
+apiVersion: specs.smi-spec.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: tcp-route

@@ -1,0 +1,24 @@
+# permissions for end users to edit udproutes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: udproute-editor-role
+rules:
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - udproutes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - specs.smi-spec.io
+  resources:
+  - udproutes/status
+  verbs:
+  - get

@@ -14,14 +14,23 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/go-logr/logr"
-	accessv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha1"
-	accessv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/access/v1alpha2"
+	accessv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1"
+	accessv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2"
+	accessv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3"
 
-	splitv1alpha1 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
-	splitv1alpha2 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha2"
-	splitv1alpha3 "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha3"
+	splitv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1"
+	splitv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2"
+	splitv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3"
+	splitv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4"
 
-	"github.com/servicemeshinterface/smi-controller-sdk/controllers"
+	specsv1alpha1 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1"
+	specsv1alpha2 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2"
+	specsv1alpha3 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3"
+	specsv1alpha4 "github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4"
+
+	accesscontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/access"
+	specscontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/specs"
+	splitcontrollers "github.com/servicemeshinterface/smi-controller-sdk/controllers/split"
 )
 
 var (
@@ -58,12 +67,18 @@ func init() {
 
 	_ = accessv1alpha1.AddToScheme(scheme)
 	_ = accessv1alpha2.AddToScheme(scheme)
+	_ = accessv1alpha3.AddToScheme(scheme)
 
 	_ = splitv1alpha1.AddToScheme(scheme)
 	_ = splitv1alpha2.AddToScheme(scheme)
 	_ = splitv1alpha3.AddToScheme(scheme)
-	// +kubebuilder:scaffold:scheme
+	_ = splitv1alpha4.AddToScheme(scheme)
 
+	_ = specsv1alpha1.AddToScheme(scheme)
+	_ = specsv1alpha2.AddToScheme(scheme)
+	_ = specsv1alpha3.AddToScheme(scheme)
+	_ = specsv1alpha4.AddToScheme(scheme)
+	// +kubebuilder:scaffold:scheme
 }
 
 // Start the controller
@@ -107,44 +122,97 @@ func Start(config Config) {
 		return nil
 	})
 
-	if err = (&controllers.TrafficTargetReconciler{
+	// Traffic Access Controllers
+	if err = (&accesscontrollers.TrafficTargetReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("TrafficTarget"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TrafficTarget")
 		os.Exit(1)
 	}
 
-	if err = (&controllers.TrafficSplitReconciler{
+	// Traffic Split Controllers
+	if err = (&splitcontrollers.TrafficSplitReconciler{
 		Client: mgr.GetClient(),
-		Log:    ctrl.Log.WithName("controllers").WithName("TrafficSplit"),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "TrafficSplit")
 		os.Exit(1)
 	}
 
+	// Traffic Spec Controllers
+	if err = (&specscontrollers.HTTPRouteGroupReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "HTTPRouteGroup")
+		os.Exit(1)
+	}
+
+	if err = (&specscontrollers.TCPRouteReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "TCPRoute")
+		os.Exit(1)
+	}
+
+	if err = (&specscontrollers.UDPRouteReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "UDPRoute")
+		os.Exit(1)
+	}
+
 	if config.WebhooksEnabled {
+		// Access conversion webhooks
 		if err = (&accessv1alpha1.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficTarget")
 			os.Exit(1)
 		}
 		if err = (&accessv1alpha2.TrafficTarget{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficTarget")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficTarget")
 			os.Exit(1)
 		}
 
+		// Splits conversion webhooks
 		if err = (&splitv1alpha1.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.TrafficSplit")
 			os.Exit(1)
 		}
 		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha2.TrafficSplit")
 			os.Exit(1)
 		}
-		if err = (&splitv1alpha2.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
-			setupLog.Error(err, "unable to create webhook", "webhook", "TrafficSplit")
+		if err = (&splitv1alpha3.TrafficSplit{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha3.TrafficSplit")
+			os.Exit(1)
+		}
+
+		// Specs conversion webhooks
+		if err = (&specsv1alpha1.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha1.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha2.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha2.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha3.HTTPRouteGroup{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "accessv1alpha3.HTTPRouteGroup")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha1.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha1.TCPRoute")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha2.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha2.TCPRoute")
+			os.Exit(1)
+		}
+		if err = (&specsv1alpha3.TCPRoute{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "specsv1alpha3.TCPRoute")
 			os.Exit(1)
 		}
 	}

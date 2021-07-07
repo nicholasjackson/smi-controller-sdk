@@ -62,9 +62,15 @@ type IdentityBindingSubject struct {
 	Namespace string `json:"namespace,omitempty"`
 }
 
-// +genclient
-// +genclient:noStatus
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// TrafficTargetStatus defines the observed state of UDPRoute
+type TrafficTargetStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
+//+kubebuilder:storageversion
 
 // TrafficTarget associates a set of traffic definitions (rules) with a service identity which is allocated to a group of pods.
 // Access is controlled via referenced TrafficSpecs and by a list of source service identities.
@@ -74,10 +80,7 @@ type IdentityBindingSubject struct {
 // * Any pod which is in the defined list, but attempts to connect on a route which is not in the list of the
 //   TrafficSpecs will be denied
 type TrafficTarget struct {
-	metav1.TypeMeta `json:",inline"`
-	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-	// +optional
+	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Spec TrafficTargetSpec `json:"spec"`
@@ -90,7 +93,8 @@ type TrafficTarget struct {
 type TrafficTargetList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []TrafficTarget `json:"items"`
+	Items           []TrafficTarget     `json:"items"`
+	Status          TrafficTargetStatus `json:"status,omitempty"`
 }
 
 func init() {

@@ -10,10 +10,49 @@ resources:
     namespaced: true
   controller: true
   domain: smi-spec.io
+  group: access
+  kind: TrafficTarget
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: access
+  kind: TrafficTarget
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha2
+  version: v1alpha2
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: access
+  kind: TrafficTarget
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/access/v1alpha3
+  version: v1alpha3
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
   group: split
   kind: TrafficSplit
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha1
   version: v1alpha1
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 - api:
     crdVersion: v1
     namespaced: true
@@ -23,6 +62,9 @@ resources:
   kind: TrafficSplit
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha2
   version: v1alpha2
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 - api:
     crdVersion: v1
     namespaced: true
@@ -32,6 +74,9 @@ resources:
   kind: TrafficSplit
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha3
   version: v1alpha3
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 - api:
     crdVersion: v1
     namespaced: true
@@ -41,6 +86,20 @@ resources:
   kind: TrafficSplit
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/split/v1alpha4
   version: v1alpha4
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: HTTPRouteGroup
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 - api:
     crdVersion: v1
     namespaced: true
@@ -49,6 +108,9 @@ resources:
   kind: HTTPRouteGroup
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2
   version: v1alpha2
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 - api:
     crdVersion: v1
     namespaced: true
@@ -57,4 +119,73 @@ resources:
   kind: HTTPRouteGroup
   path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3
   version: v1alpha3
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: specs
+  kind: HTTPRouteGroup
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4
+  version: v1alpha4
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: specs
+  kind: TCPRoute
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4
+  version: v1alpha4
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: smi-spec.io
+  group: specs
+  kind: UDPRoute
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha4
+  version: v1alpha4
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: TCPRoute
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha3
+  version: v1alpha3
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: TCPRoute
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha2
+  version: v1alpha2
+  webhooks:
+    conversion: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  domain: smi-spec.io
+  group: specs
+  kind: TCPRoute
+  path: github.com/servicemeshinterface/smi-controller-sdk/apis/specs/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    webhookVersion: v1
 version: "3"

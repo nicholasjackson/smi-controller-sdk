@@ -23,6 +23,12 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// TrafficTargetStatus defines the observed state of UDPRoute
+type TrafficTargetStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
 // TrafficTargetSpec defines the desired state of TrafficTarget
 // It is the TrafficSpec to allow for a TrafficTarget
 type TrafficTargetSpec struct {
@@ -35,6 +41,8 @@ type TrafficTargetSpec struct {
 	Name string `json:"name"`
 	// Matches is a list of TrafficSpec routes to allow traffic for
 	Matches []string `json:"matches,omitempty"`
+
+	Status TrafficTargetStatus `json:"status,omitempty"`
 }
 
 // IdentityBindingSubject is a Kubernetes objects which should be allowed access to the TrafficTarget
@@ -50,6 +58,7 @@ type IdentityBindingSubject struct {
 }
 
 //+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
 
 // TrafficTarget is the Schema for the traffictargets API
 // TrafficTarget associates a set of traffic definitions (rules) with a service identity which is allocated to a group of pods.
@@ -60,10 +69,7 @@ type IdentityBindingSubject struct {
 // * Any pod which is in the defined list, but attempts to connect on a route which is not in the list of the
 //   TrafficSpecs will be denied
 type TrafficTarget struct {
-	metav1.TypeMeta `json:",inline"`
-	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-	// +optional
+	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Selector is the pod or group of pods to allow ingress traffic

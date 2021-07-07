@@ -65,22 +65,23 @@ type HTTPMatch struct {
 	PathRegex string `json:"pathRegex,omitempty"`
 }
 
-// +genclient
-// +genclient:noStatus
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +kubebuilder:object:root=true
+type HTTPRouteGroupStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
 
 // HTTPRouteGroup is the Schema for the httproutegroups API
 type HTTPRouteGroup struct {
-	metav1.TypeMeta `json:",inline"`
-
-	// Standard object's metadata.
-	// More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata
-	// +optional
+	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Routes for inbound traffic
 	Matches []HTTPMatch `json:"matches,omitempty"`
+
+	Status HTTPRouteGroupStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true

@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: smi-controller-leader-election-rolebinding
+  namespace: '{{ .Release.Namespace }}'
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: smi-controller-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: '{{ include "smi-controller.serviceAccountName" . }}'
+  namespace: '{{ default .Release.Namespace }}'

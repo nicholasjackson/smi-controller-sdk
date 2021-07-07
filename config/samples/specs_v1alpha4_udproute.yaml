@@ -1,0 +1,7 @@
+apiVersion: specs.smi-spec.io/v1alpha4
+kind: UDPRoute
+metadata:
+  name: udproute-sample
+spec:
+  # Add fields here
+  foo: bar

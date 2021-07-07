@@ -1,0 +1,18 @@
+{{- if eq (toString .Values.webhook.enabled) "true"}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ default (include "smi-controller.fullname" .) .Values.webhook.service }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "smi-controller.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.webhook.type }}
+  ports:
+    - port: {{ .Values.webhook.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "smi-controller.selectorLabels" . | nindent 4 }}
+{{- end }}

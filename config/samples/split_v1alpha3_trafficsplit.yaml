@@ -6,17 +6,25 @@ spec:
   service: website
   matches:
   - kind: HTTPRouteGroup
+    apiGroup: specs.smi-spec.io
     name: ab-test
   backends:
   - service: website-v1
     weight: 0
   - service: website-v2
     weight: 100
+
 ---
+apiVersion: specs.smi-spec.io/v1alpha3
 kind: HTTPRouteGroup
 metadata:
   name: ab-test
-matches:
-- name: firefox-users
-  headers:
-  - user-agent: ".*Firefox.*"
+spec:
+  matches:
+  - name: metrics
+    pathRegex: "/metrics"
+    methods:
+    - GET
+  - name: health
+    pathRegex: "/ping"
+    methods: ["*"]

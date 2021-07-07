@@ -1,25 +1,57 @@
 DOCKER_REPO=nicholasjackson/smi-controller-example
-DOCKER_VERSION=dev
+DOCKER_VERSION=0.1.0
+SHELL := /bin/bash
 
-build_docker:
-	docker build -t ${DOCKER_REPO}:${DOCKER_VERSION} .
+build_docker_setup:
+	docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+	docker buildx create --name multi
+	docker buildx use multi
+	docker buildx inspect --bootstrap
 
-push_docker:
-	docker push ${DOCKER_REPO}:${DOCKER_VERSION}
+build_docker_local: build_docker_setup
+	docker buildx build --platform linux/amd64 \
+		-t ${DOCKER_REPO}:${DOCKER_VERSION} \
+		-f ./Dockerfile \
+		. \
+		--load
+	docker buildx rm multi || true
 
-update_helm:
+build_docker_push: build_docker_setup
+	docker buildx build --platform linux/arm64,linux/amd64 \
+		-t ${DOCKER_REPO}:${DOCKER_VERSION} \
+		-f ./Dockerfile \
+		. \
+		--push
+	docker buildx rm multi || true
+
+generate_helm: manifests
+# First generate the Helm specific kustomize config that creates the RBAC and CRDs
+	kustomize build ./config/helm -o ./helm/smi-controller/templates
+
+# Replace port with helm syntax, kustomize rejects Helm syntax not in quotes and this field is an integer
+	sed -i 's/port: 443/port: {{ .Values.webhook.port }}/' ./helm/smi-controller/templates/apiextensions.k8s.io_v1_customresourcedefinition_*.yaml
+
+# Delete extra files
+	rm ./helm/smi-controller/templates/v1_service_smi-controller-controller-manager-metrics-service.yaml
+	rm ./helm/smi-controller/templates/v1_serviceaccount_smi-controller-controller-manager.yaml
+
+# Now package the Helm chart into a tarball
 	helm package ./helm/smi-controller
-	mv smi-controller-0.1.0.tgz ./docs/
+
+# Move it to the ./docs folder used to serve Github Pages
+	mv smi-controller-${DOCKER_VERSION}.tgz ./docs/
+
+# Generate the index
 	cd ./docs && helm repo index .
 
 fetch_certs:
 	mkdir -p /tmp/k8s-webhook-server/serving-certs/
 	
-	kubectl get secret controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n shipyard -o json | \
 		jq -r '.data."tls.crt"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.crt
 	
-	kubectl get secret controller-webhook-certificate -n smi -o json | \
+	kubectl get secret smi-controller-webhook-certificate -n shipyard -o json | \
 		jq -r '.data."tls.key"' | \
 		base64 -d > /tmp/k8s-webhook-server/serving-certs/tls.key
 
@@ -78,8 +110,10 @@ vet: ## Run go vet against code.
 ENVTEST_ASSETS_DIR=$(shell pwd)/testbin
 test: manifests generate fmt vet ## Run tests.
 	mkdir -p ${ENVTEST_ASSETS_DIR}
+	echo ${ENVTEST_ASSETS_DIR}
 	test -f ${ENVTEST_ASSETS_DIR}/setup-envtest.sh || curl -sSLo ${ENVTEST_ASSETS_DIR}/setup-envtest.sh https://raw.githubusercontent.com/kubernetes-sigs/controller-runtime/v0.7.2/hack/setup-envtest.sh
-	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh; fetch_envtest_tools $(ENVTEST_ASSETS_DIR); setup_envtest_env $(ENVTEST_ASSETS_DIR); go test ./... -coverprofile cover.out
+# Run test sequentially as each controller starts it's own test environment
+	source ${ENVTEST_ASSETS_DIR}/setup-envtest.sh; fetch_envtest_tools $(ENVTEST_ASSETS_DIR); setup_envtest_env $(ENVTEST_ASSETS_DIR); go test -p 1 ./... -coverprofile cover.out
 
 ##@ Build
 
@@ -109,7 +143,6 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/default | kubectl delete -f -
-
 
 CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
 controller-gen: ## Download controller-gen locally if necessary.

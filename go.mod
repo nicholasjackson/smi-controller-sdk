@@ -1,22 +1,19 @@
 module github.com/servicemeshinterface/smi-controller-sdk
 
-go 1.15
+go 1.16
 
 require (
 	github.com/cucumber/godog v0.11.0
 	github.com/cucumber/messages-go/v10 v10.0.3
-	github.com/go-logr/logr v0.3.0
-	github.com/go-logr/zapr v0.3.0 // indirect
-	github.com/onsi/ginkgo v1.14.1
-	github.com/onsi/gomega v1.10.2
-	github.com/servicemeshinterface/smi-sdk-go v0.4.1
-	github.com/stretchr/testify v1.6.1
-	k8s.io/api v0.18.8
-	k8s.io/apimachinery v0.18.8
-	k8s.io/client-go v0.18.8
-	sigs.k8s.io/controller-runtime v0.6.0
+	github.com/go-logr/logr v0.4.0
+	github.com/hashicorp/go-hclog v0.16.1
+	github.com/jinzhu/copier v0.3.2
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e
+	github.com/shipyard-run/shipyard v0.3.12
+	github.com/stretchr/testify v1.7.0
+	k8s.io/api v0.19.3
+	k8s.io/apimachinery v0.19.3
+	k8s.io/client-go v0.19.3
+	k8s.io/kubectl v0.19.3
+	sigs.k8s.io/controller-runtime v0.7.2
 )
-
-//replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => ../servicemeshinterface/smi-sdk-go
-
-replace github.com/servicemeshinterface/smi-sdk-go v0.4.1 => github.com/nicholasjackson/smi-sdk-go v0.0.0-20210331180119-d1be3fc5b8c9

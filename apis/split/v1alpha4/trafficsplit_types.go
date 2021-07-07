@@ -51,20 +51,26 @@ type TrafficSplitBackend struct {
 	Weight int `json:"weight"`
 }
 
-//+kubebuilder:object:root=true
-//+kubebuilder:storageversion
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// TrafficSplitStatus defines the observed state of TrafficSplit
+type TrafficSplitStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
+// +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
+// +kubebuilder:storageversion
 
 // TrafficSplit is the Schema for the trafficsplits API
 type TrafficSplit struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec TrafficSplitSpec `json:"spec,omitempty"`
+	Spec   TrafficSplitSpec   `json:"spec,omitempty"`
+	Status TrafficSplitStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
 // TrafficSplitList contains a list of TrafficSplit
 type TrafficSplitList struct {
